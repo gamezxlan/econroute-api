@@ -5,6 +5,7 @@ exports.calculateRoute = async (req, res) => {
     const result = await decisionService.calculate(req.body);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("🔥 ERROR:", error); // <-- clave
+    res.status(400).json({ error: error.message || "Unknown error"});
   }
 };

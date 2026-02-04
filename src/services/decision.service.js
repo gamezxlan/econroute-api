@@ -3,6 +3,18 @@ const { v4: uuidv4 } = require("uuid");
 const costCalculator = require("../utils/costCalculator");
 
 exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
+  if (!routes || !Array.isArray(routes)) {
+    throw new Error("Invalid routes");
+  }
+
+  if (!vehicle || !vehicle.consumption_km_per_l) {
+    throw new Error("Invalid vehicle data");
+  }
+
+  if (!fuel_price_per_l) {
+    throw new Error("Invalid fuel price");
+  }
+
   if (!routes || routes.length === 0) {
     throw new Error("No routes provided");
   }
@@ -38,11 +50,17 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
 
   const decisionId = uuidv4();
 
-  await pool.query(
-  `INSERT INTO decisions (id, routes, cheapest_route)
-   VALUES ($1, $2::jsonb, $3)`,
-  [decisionId, JSON.stringify(routesWithCost), cheapestRoute.routeId]
-);
+  try {
+    await pool.query(
+      `INSERT INTO decisions (id, routes, cheapest_route)
+      VALUES ($1, $2, $3)`,
+      [decisionId, routesWithCost, cheapestRoute.routeId]
+    );
+  } catch (dbError) {
+    console.error("🔥 DB ERROR:", dbError);
+    throw new Error("Database insert failed");
+  }
+
 
 
   return {
