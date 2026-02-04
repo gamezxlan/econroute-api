@@ -53,8 +53,8 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
   try {
     await pool.query(
       `INSERT INTO decisions (id, routes, cheapest_route)
-      VALUES ($1, $2, $3)`,
-      [decisionId, routesWithCost, cheapestRoute.routeId]
+      VALUES ($1, $2::jsonb, $3)`,
+      [decisionId, JSON.stringify(routesWithCost), cheapestRoute.routeId]
     );
   } catch (dbError) {
     console.error("🔥 DB ERROR:", dbError);
