@@ -68,10 +68,10 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
     VALUES ($1, $2, $3, $4, $5, $6)`,
     [
       "MX",
-      fuelPrice,
+      fuel_price_per_l,
       vehicle.consumption_km_per_l,
       routes.length,
-      cheapest.routeId,
+      cheapestRoute.routeId,
       JSON.stringify(routes)
     ]
   );
