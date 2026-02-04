@@ -61,6 +61,26 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
     throw new Error("Database insert failed");
   }
 
+  try {
+    await pool.query(
+    `INSERT INTO route_decisions
+    (country, fuel_price, vehicle_efficiency, routes_count, cheapest_route, routes)
+    VALUES ($1, $2, $3, $4, $5, $6)`,
+    [
+      "MX",
+      fuelPrice,
+      vehicle.consumption_km_per_l,
+      routes.length,
+      cheapest.routeId,
+      JSON.stringify(routes)
+    ]
+  );
+
+  } catch (dbError) {
+    console.error("🔥 DB ERROR:", dbError);
+    throw new Error("Database insert failed");
+  }
+
 
 
   return {
