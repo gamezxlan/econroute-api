@@ -2,7 +2,7 @@ const pool = require("../db");
 const { v4: uuidv4 } = require("uuid");
 const costCalculator = require("../utils/costCalculator");
 
-exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
+exports.calculate = async ({ routes, vehicle, fuel_price_per_l, country }) => {
   if (!routes || !Array.isArray(routes)) {
     throw new Error("Invalid routes");
   }
@@ -17,6 +17,10 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
 
   if (!routes || routes.length === 0) {
     throw new Error("No routes provided");
+  }
+
+  if (!country || typeof country !== "string") {
+    throw new Error("Invalid country");
   }
 
   const routesWithCost = routes.map(route => {
@@ -75,7 +79,7 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
     (country, fuel_price, vehicle_efficiency, routes_count, cheapest_route, routes)
     VALUES ($1, $2, $3, $4, $5, $6)`,
     [
-      "MX",
+      country,
       fuel_price_per_l,
       vehicle.consumption_km_per_l,
       routes.length,
