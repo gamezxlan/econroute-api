@@ -8,6 +8,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/decision", decisionRoutes);
-app.use("/selection", selectionRoutes);
+app.use("/decision", selectionRoutes);
 
 module.exports = app;
