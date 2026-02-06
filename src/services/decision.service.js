@@ -29,18 +29,26 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
     throw new Error("Invalid numeric values in input");
   }
 
-  const totalCost = costCalculator.calculateTotal(
-    route.distanceKm,
-    vehicle.consumption_km_per_l,
-    fuel_price_per_l,
-    route.tollsCost || 0
-  );
+  const costResult = costCalculator.calculateTotal({
+    distanceKm: route.distanceKm,
+    durationMin: route.durationMin,
+    durationTrafficMin: route.durationTrafficMin,
+    consumptionKmPerL: vehicle.consumption_km_per_l,
+    fuelPrice: fuel_price_per_l,
+    tollsCost: route.tollsCost || 0,
+  });
 
-  if (isNaN(totalCost)) {
+  if (!costResult || isNaN(costResult.totalCost)) {
     throw new Error("Total cost calculation failed");
   }
 
-  return { ...route, totalCost };
+  return {
+    ...route,
+    totalCost: costResult.totalCost,
+    fuelCost: costResult.fuelCost,
+    fuelLiters: costResult.fuelLiters,
+    costBreakdown: costResult.breakdown,
+  };
 });
 
 
@@ -72,7 +80,7 @@ exports.calculate = async ({ routes, vehicle, fuel_price_per_l }) => {
       vehicle.consumption_km_per_l,
       routes.length,
       cheapestRoute.routeId,
-      JSON.stringify(routes)
+      JSON.stringify(routesWithCost)
     ]
   );
 
